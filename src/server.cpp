@@ -153,6 +153,26 @@ void fpga_go(int sock) {
   printf("[fpga_go]\n");
 }
 
+void fpga_program(int sock) {
+  ssize_t n;
+  char buffer[BUFFER_SIZE];
+
+  printf("[fpga_program]\n");
+
+  do {
+    bzero(buffer, BUFFER_SIZE);
+    n = read(sock, buffer, BUFFER_SIZE);
+
+    if (n < 0) error("ERROR reading from socket");
+  } while((BUFFER_SIZE - n) == 0);
+
+  printf("[fpga_program] buffer = %s\n", buffer);
+
+  n = write(sock, "ack", 3);
+  if (n < 0) error("ERROR writing to socket");
+  printf("[fpga_program] send ack!\n");
+}
+
 /******** DOSTUFF() *********************
  There is a separate instance of this function
  for each connection.  It handles all communication
@@ -165,9 +185,10 @@ void dostuff (int sock) {
      cmd = fpga_cmd(sock);
 
      switch(cmd) {
-       case 'w': fpga_write(sock); break;
-       case 'r': fpga_read(sock);  break;
-       case 'g': fpga_go(sock);    break;
+       case 'w': fpga_write(sock);   break;
+       case 'r': fpga_read(sock);    break;
+       case 'p': fpga_program(sock); break;
+       case 'g': fpga_go(sock);      break;
      }
    }
 }
