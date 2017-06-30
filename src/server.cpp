@@ -174,6 +174,8 @@ void fpga_program(int sock) {
 }
 
 void fpga_quit(int sock) {
+  ssize_t n;
+
   printf("[fpga_quit]\n");
 
   n = write(sock, "ack", 3);
