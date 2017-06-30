@@ -173,6 +173,14 @@ void fpga_program(int sock) {
   printf("[fpga_program] send ack!\n");
 }
 
+void fpga_quit(int sock) {
+  printf("[fpga_quit]\n");
+
+  n = write(sock, "ack", 3);
+  if (n < 0) error("ERROR writing to socket");
+  printf("[fpga_program] send ack!\n");
+}
+
 /******** DOSTUFF() *********************
  There is a separate instance of this function
  for each connection.  It handles all communication
@@ -188,7 +196,7 @@ void dostuff (int sock) {
        case 'w': fpga_write(sock);   break;
        case 'r': fpga_read(sock);    break;
        case 'p': fpga_program(sock); break;
-       case 'g': fpga_go(sock);      break;
+       case 'q': fpga_quit(sock);    break;
      }
    }
 }
