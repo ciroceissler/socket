@@ -90,8 +90,17 @@ int fpga_cmd(int sock) {
 void fpga_write(int sock) {
   ssize_t n;
   char buffer[BUFFER_SIZE];
+  int64_t length;
 
   printf("[fpga_write]\n");
+
+  bzero(buffer, BUFFER_SIZE);
+  n = read(sock, (void *) &length, 8);
+  if (n < 0) error("ERROR reading from socket");
+
+  n = write(sock, "ack", 3);
+  if (n < 0) error("ERROR writing to socket");
+  printf("[fpga_read] send ack!\n");
 
   do {
     bzero(buffer, BUFFER_SIZE);
@@ -110,7 +119,9 @@ void fpga_write(int sock) {
       printf("[fpga_write] buffer[%d] = %d\n", i, tmp);
     }
 
-  } while((BUFFER_SIZE - n) == 0);
+    length -= n;
+
+  } while(length > 0);
 
   n = write(sock, "ack", 3);
   if (n < 0) error("ERROR writing to socket");
